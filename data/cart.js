@@ -62,6 +62,5 @@ export function updateCartQuantity(productId, newValue) {
       matchingItem.quantity = newValue;
       updateCartQuantity();
     }
-    console.log(matchingItem);
   });
 }

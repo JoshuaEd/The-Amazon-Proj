@@ -5,6 +5,11 @@ import { removeFromCart } from "../data/cart.js";
 import dayjs from "https://unpkg.com/dayjs@1.11.10/esm/index.js";
 import { deliveryOptions } from "../data/deliveryOptions.js";
 
+let now = dayjs();
+let deleveryDate = now.add(7, "days");
+deleveryDate.format("dddd, MMMM D");
+console.log(deleveryDate);
+
 let cartSummary = "";
 cart.forEach((cartItem) => {
   const productId = cartItem.productId;
@@ -16,11 +21,27 @@ cart.forEach((cartItem) => {
     }
   });
 
+  const deliveryOptionId = cartItem.deliveryOptionId;
+  let deliveryOption;
+  deliveryOptions.forEach((option) => {
+    if (deliveryOptionId === option.id) {
+      deliveryOption = option;
+    }
+  });
+
+  // Calculating dates
+
+  const today = dayjs();
+  const deliveryDate = today.add(deliveryOption.deliveryDays, "days");
+  const dateString = deliveryDate.format("dddd, MMM D");
+
+  console.log(deliveryOption);
+
   cartSummary += `
    <div class="cart-item-container
    js-cart-item-container-${matchingProduct.id}">
           <div class="delivery-date">
-            Delivery date: Tuesday, June 21
+            Delivery date: ${dateString}
           </div>
 
           <div class="cart-item-details-grid">
@@ -58,7 +79,7 @@ cart.forEach((cartItem) => {
 });
 
 function deliveryOptionsHTML(matchingProduct, cartItem) {
-  let html = "";
+  let optionHTML = "";
   deliveryOptions.forEach((deliveryOption) => {
     const today = dayjs();
     const deliveryDate = today.add(deliveryOption.deliveryDays, "days");
@@ -68,8 +89,8 @@ function deliveryOptionsHTML(matchingProduct, cartItem) {
         ? "FREE"
         : `$${formatCurrency(deliveryOption.priceCents)} -`;
     const isChecked = deliveryOption.id === cartItem.deliveryOptionId;
-    html += `  <div class="delivery-option">
-                <input type="radio" ${isChecked ? 'checked' : ''} class="delivery-option-input" name="delivery-option-${matchingProduct.id}">
+    optionHTML += `  <div class="delivery-option">
+                <input type="radio" ${isChecked ? "checked" : ""} class="delivery-option-input" name="delivery-option-${matchingProduct.id}">
                 <div>
                   <div class="delivery-option-date">
                    ${dateString}
@@ -81,7 +102,7 @@ function deliveryOptionsHTML(matchingProduct, cartItem) {
               </div>
               `;
   });
-  return html;
+  return optionHTML;
 }
 
 document.querySelector(".order-summary").innerHTML += cartSummary;
