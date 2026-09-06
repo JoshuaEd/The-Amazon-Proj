@@ -1,4 +1,9 @@
-import { cart, saveToStorage, updateCartQuantity } from "../data/cart.js";
+import {
+  cart,
+  saveToStorage,
+  updateCartQuantity,
+  updateDeliveryOption,
+} from "../data/cart.js";
 import { products } from "../data/products.js";
 import formatCurrency from "./utils/money.js";
 import { removeFromCart } from "../data/cart.js";
@@ -89,7 +94,9 @@ function deliveryOptionsHTML(matchingProduct, cartItem) {
         ? "FREE"
         : `$${formatCurrency(deliveryOption.priceCents)} -`;
     const isChecked = deliveryOption.id === cartItem.deliveryOptionId;
-    optionHTML += `  <div class="delivery-option">
+    optionHTML += `
+      <div class="delivery-option js-delivery-option" data-product-id="${matchingProduct.id}"
+      data-delivery-option-id="${deliveryOption.id}">
                 <input type="radio" ${isChecked ? "checked" : ""} class="delivery-option-input" name="delivery-option-${matchingProduct.id}">
                 <div>
                   <div class="delivery-option-date">
@@ -106,6 +113,14 @@ function deliveryOptionsHTML(matchingProduct, cartItem) {
 }
 
 document.querySelector(".order-summary").innerHTML += cartSummary;
+
+// Delivery Option
+document.querySelectorAll(".js-delivery-option").forEach((element) => {
+  element.addEventListener("click", () => {
+    const { productId, deliveryOptionId } = element.dataset;
+    updateDeliveryOption(productId, deliveryOptionId);
+   });
+});
 
 //Deleting from cart//
 document.querySelectorAll(".delete-quantity-link").forEach((link) => {
@@ -174,10 +189,6 @@ updateLinks.forEach((updateLink) => {
       const saveLink = document.querySelector(`.quantity-save-${productId}`);
       const itemValue = document.querySelector(`.quantity-label-${productId}`);
 
-      // saveLink.style.display = "inline";
-      // updateLink.style.display = "none";
-      // itemValue.innerHTML = `<input type="text" class="save-input-${productId} save-input" value="${cartItem.quantity}">`;
-
       const inputEl = document.querySelector(`.save-input-${productId}`);
 
       const newValue = Number(inputEl.value);
@@ -198,3 +209,29 @@ updateLinks.forEach((updateLink) => {
     }
   });
 });
+
+// construction function
+function Home(home) {
+  this.home = home;
+  console.log(home);
+}
+
+const location = new Home("Orhuwhorun");
+const location2 = new Home("Ekwere");
+const location3 = new Home("Abuja");
+
+class Product {
+  constructor(name, price, quantity) {
+    this.name = name;
+    this.price = price;
+    this.quantity = quantity;
+  }
+  displayProduct() {
+    console.log(
+      `Product: ${this.name}, Price: ${this.price}, Quantity: ${this.quantity}`,
+    );
+  }
+}
+
+const product1 = new Product("Laptop", 1000, 5);
+product1.displayProduct();

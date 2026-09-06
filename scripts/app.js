@@ -9,6 +9,7 @@ let productHTML = "";
 
 export function updateCart(productId, productName, productPrice) {
   let cartQuantity = 0;
+
   cart.forEach((cartItem) => {
     cartQuantity += cartItem.quantity;
     let selector = Number(
