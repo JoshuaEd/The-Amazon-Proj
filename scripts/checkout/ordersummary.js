@@ -4,44 +4,35 @@ import {
   updateCartQuantity,
   updateDeliveryOption,
 } from "../../data/cart.js";
-import { products } from "../../data/products.js";
+import { products, getProduct } from "../../data/products.js";
 import formatCurrency from "../utils/money.js";
 import { removeFromCart } from "../../data/cart.js";
 import dayjs from "https://unpkg.com/dayjs@1.11.10/esm/index.js";
-import { deliveryOptions } from "../../data/deliveryOptions.js";
+import {
+  deliveryOptions,
+  getDeliveryOption,
+} from "../../data/deliveryOptions.js";
+import { renderPaymentSummary } from "./paymentsummary.js";
 
 let now = dayjs();
 let deleveryDate = now.add(7, "days");
 deleveryDate.format("dddd, MMMM D");
-console.log(deleveryDate);
 
 export function renderOrderSummary() {
   let cartSummary = "";
   cart.forEach((cartItem) => {
     const productId = cartItem.productId;
 
-    let matchingProduct;
-    products.forEach((product) => {
-      if (productId === product.id) {
-        matchingProduct = product;
-      }
-    });
+    const matchingProduct = getProduct(productId);
 
     const deliveryOptionId = cartItem.deliveryOptionId;
-    let deliveryOption;
-    deliveryOptions.forEach((option) => {
-      if (deliveryOptionId === option.id) {
-        deliveryOption = option;
-      }
-    });
+
+    const deliveryOption = getDeliveryOption(deliveryOptionId);
 
     // Calculating dates
-
     const today = dayjs();
     const deliveryDate = today.add(deliveryOption.deliveryDays, "days");
     const dateString = deliveryDate.format("dddd, MMM D");
-
-    console.log(deliveryOption);
 
     cartSummary += `
    <div class="cart-item-container
@@ -147,10 +138,11 @@ export function renderOrderSummary() {
     cart.forEach((cartItem) => {
       cartQuantity += cartItem.quantity;
     });
+     renderPaymentSummary();
     document.querySelector(`.js-cart-item-quantity`).innerHTML =
       `${cartQuantity} Items`;
     document.querySelector(".items-summary").innerHTML =
-      `Item: (${cartQuantity})`;
+    `Item: (${cartQuantity})`;
   }
 
   // Update Link
@@ -214,29 +206,3 @@ export function renderOrderSummary() {
     });
   });
 }
-
-// construction function
-function Home(home) {
-  this.home = home;
-  console.log(home);
-}
-
-const location = new Home("Orhuwhorun");
-const location2 = new Home("Ekwere");
-const location3 = new Home("Abuja");
-
-class Product {
-  constructor(name, price, quantity) {
-    this.name = name;
-    this.price = price;
-    this.quantity = quantity;
-  }
-  displayProduct() {
-    console.log(
-      `Product: ${this.name}, Price: ${this.price}, Quantity: ${this.quantity}`,
-    );
-  }
-}
-
-const product1 = new Product("Laptop", 1000, 5);
-product1.displayProduct();
